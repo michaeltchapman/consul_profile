@@ -33,23 +33,30 @@ class consul_profile::openstack::compute {
     }
   }
 
+
+  # nova::network::neutron has to be separate because of
+  # data dep cycle between nova-api and neutron-server
   if ! hiera('keystone_Address', false) {
     runtime_fail { 'novakeystonedep':
       fail    => true,
       message => "novakeystonedep: requires keystone_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
-      response +> 'novakeystonedep'
+    if ! hiera('neutron-server_Address', false) {
+      runtime_fail { 'novaneutronserverdep':
+        fail    => true,
+        message => "novaneutronserverdep: requires neutron-server_Address",
+      }
+    } else {
+      Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
+        includes +> ['::nova::network::neutron']
+      }
     }
   }
 
   profile::discovery::consul::multidep { 'novamultidep':
-    deps     => ['novarabbitmqdep','novaglancedep','novadbdep','novakeystonedep'],
-    includes => ['::nova','::nova::network::neutron']
+    deps     => ['novarabbitmqdep','novaglancedep','novadbdep'],
+    includes => ['::nova']
   }
 
 }
-
-novarabbitmqdep novaglancedep novadbdep novakeystonedep
-novakeystonedep novaglancedep novarabbitmqdep novakeystonedep
