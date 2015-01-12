@@ -1,3 +1,3 @@
 class consul_profile::openstack::messaging {
-  include profile::messaging::rabbitmq
+  include consul_profile::messaging::rabbitmq
 }

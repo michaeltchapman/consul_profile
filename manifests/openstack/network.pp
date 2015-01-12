@@ -12,8 +12,8 @@ class consul_profile::openstack::network {
     }
   } else {
     Profile::Discovery::Consul::Multidep<| title == 'neutronmultidep' |> {
-      response +> 'neutronrabbitmqdep'
+      response +> ['neutronrabbitmqdep']
     }
   }
-
+  Neutron_config<| title == 'database/connection' |> ~> Exec<| title == 'neutron-db-sync' |>
 }

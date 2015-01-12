@@ -1,9 +1,11 @@
-class consul_profile::openstack::compute::hypervisor {
+class consul_profile::openstack::compute::hypervisor (
+  $hypervisor_type = 'libvirt'
+) {
   include ::consul_profile::openstack::compute
   include ::consul_profile::openstack::network
 
   Profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
-    includes +> ['::nova::compute', '::nova::compute::spice']
+    includes +> ['::nova::compute', '::nova::compute::spice', "::nova::compute::${hypervisor_type}"]
   }
 
   if ! hiera('keystone_Address', false) {

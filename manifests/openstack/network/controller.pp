@@ -26,6 +26,11 @@ class consul_profile::openstack::network::controller {
                        '::neutron::server::notifications',
                        '::profile::discovery::consul::network_server']
         }
+
+        profile::firewall::rule { '210 neutron-server accept tcp':
+          port   => 9696,
+          extras => $extras
+        }
       }
     }
   }
