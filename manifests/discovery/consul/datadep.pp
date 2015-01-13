@@ -1,10 +1,9 @@
 #
-define profile::discovery::consul::datadep (
+define consul_profile::discovery::consul::datadep (
   $key,
   $before    = [],
   $badvalues = [],
   $include   = [],
-  $caller    = undef
 ) {
 
   $_key = hiera($key, false)
@@ -13,14 +12,7 @@ define profile::discovery::consul::datadep (
     $fail = true
   } else {
     include $include
-
     $fail = false
-
-    if $caller {
-      Profile::Discovery::Consul::Multidep<| title == $caller |> {
-        response +> $title
-      }
-    }
   }
 
   runtime_fail { $title:

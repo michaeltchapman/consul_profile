@@ -6,7 +6,7 @@ class consul_profile::openstack::compute {
       message => "novadbdep: requires mysql_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
       response +> 'novadbdep'
     }
   }
@@ -17,7 +17,7 @@ class consul_profile::openstack::compute {
       message => "novaglancedep: requires glance-api_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
       response +> 'novaglancedep'
     }
   }
@@ -28,7 +28,7 @@ class consul_profile::openstack::compute {
       message => "novarabbitmqdep: requires rabbitmq_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
       response +> 'novarabbitmqdep'
     }
   }
@@ -48,13 +48,13 @@ class consul_profile::openstack::compute {
         message => "novaneutronserverdep: requires neutron-server_Address",
       }
     } else {
-      Profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
+      Consul_profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
         includes +> ['::nova::network::neutron']
       }
     }
   }
 
-  profile::discovery::consul::multidep { 'novamultidep':
+  consul_profile::discovery::consul::multidep { 'novamultidep':
     deps     => ['novarabbitmqdep','novaglancedep','novadbdep'],
     includes => ['::nova']
   }

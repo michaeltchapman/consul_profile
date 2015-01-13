@@ -1,8 +1,8 @@
 class consul_profile::openstack::image::registry (
 ) {
-  profile::discovery::consul::multidep { 'glanceregmultidep':
+  consul_profile::discovery::consul::multidep { 'glanceregmultidep':
     deps     => ['glanceregkeystonedep','glanceregmysqldep'],
-    includes => ['::profile::openstack::image::registry', '::profile::discovery::consul::image_registry'],
+    includes => ['::profile::openstack::image::registry', '::consul_profile::discovery::consul::image_registry'],
   }
 
   if ! hiera('mysql_Address', false) {
@@ -11,7 +11,7 @@ class consul_profile::openstack::image::registry (
       message => "glanceregmysqldep: requires mysql_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'glanceregmultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'glanceregmultidep' |> {
       response +> 'glanceregmysqldep'
     }
   }
@@ -22,7 +22,7 @@ class consul_profile::openstack::image::registry (
       message => "glanceregmysqldep: requires keystone_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'glanceregmultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'glanceregmultidep' |> {
       response +> 'glanceregkeystonedep'
     }
   }

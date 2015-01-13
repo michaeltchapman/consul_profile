@@ -7,7 +7,7 @@ class consul_profile::openstack::image::api(
       message => "Glance api requires mysql_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
       response +> 'glanceapimysqldep'
     }
   }
@@ -18,7 +18,7 @@ class consul_profile::openstack::image::api(
       message => "Glance api requires keystone_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
       response +> 'glanceapikeystonedep'
     }
   }
@@ -29,13 +29,13 @@ class consul_profile::openstack::image::api(
       message => "Glance api requires glance-registry_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'glanceapimultidep' |> {
       response +> 'glanceapiregistrydep'
     }
   }
 
-  profile::discovery::consul::multidep { 'glanceapimultidep':
+  consul_profile::discovery::consul::multidep { 'glanceapimultidep':
     deps     => ['glanceapikeystonedep','glanceapimysqldep','glanceapiregistrydep'],
-    includes => ['::profile::openstack::image::api', 'profile::discovery::consul::image_api']
+    includes => ['::profile::openstack::image::api', 'consul_profile::discovery::consul::image_api']
   }
 }

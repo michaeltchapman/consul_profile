@@ -21,10 +21,10 @@ class consul_profile::openstack::network::controller {
           message => "neutron-server requires nova-api_Address",
         }
       } else {
-        Profile::Discovery::Consul::Multidep<| title == 'neutronmultidep' |> {
+        Consul_profile::Discovery::Consul::Multidep<| title == 'neutronmultidep' |> {
           includes +> ['::neutron::server',
                        '::neutron::server::notifications',
-                       '::profile::discovery::consul::network_server']
+                       '::consul_profile::discovery::consul::network_server']
         }
 
         profile::firewall::rule { '210 neutron-server accept tcp':

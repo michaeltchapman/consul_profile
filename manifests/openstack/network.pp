@@ -1,6 +1,6 @@
 class consul_profile::openstack::network {
 
-  profile::discovery::consul::multidep { 'neutronmultidep':
+  consul_profile::discovery::consul::multidep { 'neutronmultidep':
     deps     => ['neutronrabbitmqdep'],
     includes => ['::profile::openstack::network']
   }
@@ -11,7 +11,7 @@ class consul_profile::openstack::network {
       message => "neutron requires rabbitmq_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep<| title == 'neutronmultidep' |> {
+    Consul_profile::Discovery::Consul::Multidep<| title == 'neutronmultidep' |> {
       response +> ['neutronrabbitmqdep']
     }
   }

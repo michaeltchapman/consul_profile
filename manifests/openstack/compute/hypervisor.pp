@@ -4,7 +4,7 @@ class consul_profile::openstack::compute::hypervisor (
   include ::consul_profile::openstack::compute
   include ::consul_profile::openstack::network
 
-  Profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
+  Consul_profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
     includes +> ['::nova::compute', '::nova::compute::spice', "::nova::compute::${hypervisor_type}"]
   }
 
@@ -20,7 +20,7 @@ class consul_profile::openstack::compute::hypervisor (
         message => "Nova compute requires neutron-server_Address",
       }
     } else {
-      Profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
+      Consul_profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
         includes +> ['::nova::compute::neutron']
       }
     }

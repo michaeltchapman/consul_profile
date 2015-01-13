@@ -7,8 +7,8 @@ class consul_profile::openstack::compute::api {
       message => "Nova api requires keystone_Address",
     }
   } else {
-    Profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
-      includes +> ['::nova::api', '::profile::discovery::consul::compute_api']
+    Consul_profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
+      includes +> ['::nova::api', '::consul_profile::discovery::consul::compute_api']
     }
   }
 }
