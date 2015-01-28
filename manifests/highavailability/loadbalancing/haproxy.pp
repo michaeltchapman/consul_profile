@@ -2,8 +2,9 @@ class consul_profile::highavailability::loadbalancing::haproxy (
   $service_hash = {},
   $bind_address_hash = {}
 ) {
-  include ::haproxy
   if $service_hash {
+
+    include ::haproxy
     notice($service_hash)
     $services = keys($service_hash)
 
