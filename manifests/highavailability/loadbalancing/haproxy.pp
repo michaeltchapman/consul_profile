@@ -15,12 +15,14 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
 
     $interfaces = keys($bind_address_hash)
-    $interfaces_tags = prefix(keys($bind_address_hash), "haproxy::interface:")
+    $_interfaces_tags = prefix(keys($bind_address_hash), "haproxy::interface:")
+    $interfaces_tags = flatten([$_interfaces_tags, 'haproxy::skip: true'])
 
     consul::service { 'haproxy':
-      tags => $interfaces_tags,
+      tags    => $interfaces_tags,
       require => Service['haproxy']
     }
+
   } else {
     runtime_fail { 'haproxyservicesdep':
       fail    => true,

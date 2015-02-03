@@ -18,6 +18,14 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
     $mode = 'http'
   }
 
+  $_skip = grep($service_hash[$title]['tags'], 'haproxy::skip:' )
+  $__skip = unique(split(delete(join($_skip, '%%%'), 'haproxy::skip:'), '%%%'))
+  if count($__skip) > 0 {
+    $skip = $__skip[0]
+  } else {
+    $skip = false
+  }
+
   $_port = grep($service_hash[$title]['tags'], 'haproxy::port:' )
   $__port = unique(split(delete(join($_port, '%%%'), 'haproxy::port:'), '%%%'))
   if count($__port) > 0 {
@@ -70,17 +78,22 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
   }
 
   notice("Service: $title, Bind hash: ${bind}")
-  
+
   # new bind format for listen type zzzzzzzzz
   #$bind = { '10.0.0.1:80' => ['ssl', 'crt', '/path/to/my/crt.pem'] }
 
-  if $bind {
+  if $bind and !$skip {
     ::haproxy::listen { $title:
       mode             => $mode,
       collect_exported => false,
       options          => $_listen_options,
       bind             => $bind,
       ipaddress        => false,
+    }
+
+    $firewall_title = delete($title, '-')
+    ::profile::firewall::rule { "200 ${firewall_title} tcp ${port}":
+      port => $port
     }
 
     $titles = prefix($backends, $title)
