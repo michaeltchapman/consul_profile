@@ -96,6 +96,20 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
       port => $port
     }
 
+    # watch the service catalog
+    ::consul::watch { "haproxy_service_${title}":
+      type    => 'service',
+      service => $title,
+      handler => 'ts puppet apply /etc/puppet/manifests/site.pp',
+    }
+
+    # TODO: watch the k/v store
+    #::consul::watch { "haproxy_kv_${title}":
+    #  type    => 'service',
+    #  service => $title,
+    #  handler => 'puppet apply /etc/puppet/manifests/site.pp',
+    #}
+
     $titles = prefix($backends, $title)
     consul_profile::highavailability::loadbalancing::haproxy::balancermember { $titles:
       service        => $title,

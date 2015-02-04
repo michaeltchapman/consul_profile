@@ -1,10 +1,18 @@
 class consul_profile::highavailability::loadbalancing::haproxy (
   $service_hash = {},
-  $bind_address_hash = {}
+  $bind_address_hash = {},
+  $ts_ensure = 'installed'
 ) {
+
+  # This is used for consul watches
+  package { 'ts':
+    ensure => $ts_ensure,
+  }
+
   if $service_hash {
 
     include ::haproxy
+
     notice($service_hash)
     $services = keys($service_hash)
 
