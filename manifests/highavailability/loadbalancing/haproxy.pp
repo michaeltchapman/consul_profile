@@ -1,5 +1,5 @@
 class consul_profile::highavailability::loadbalancing::haproxy (
-  $service_hash = {},
+  $service_hash = undef,
   $bind_address_hash = {},
   $ts_ensure = 'installed'
 ) {
