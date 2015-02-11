@@ -6,6 +6,9 @@ class consul_profile::discovery::consul::identity (
   consul::service { 'keystone':
     port    => 5000,
     require => Service['keystone'],
-    tags    => $::consul_profile::discovery::consul::params::openstack_api_tags
+  }
+
+  consul_profile::discovery::consul::haproxy_service { 'keystone':
+    config_hash => $::consul_profile::discovery::consul::params::openstack_api_haproxy_config
   }
 }

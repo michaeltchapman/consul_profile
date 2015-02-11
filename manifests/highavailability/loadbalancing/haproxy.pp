@@ -21,7 +21,6 @@ class consul_profile::highavailability::loadbalancing::haproxy (
       bind_address_hash => $bind_address_hash
     }
 
-
     $interfaces = keys($bind_address_hash)
     $_interfaces_tags = prefix(keys($bind_address_hash), "haproxy::interface:")
     $interfaces_tags = flatten([$_interfaces_tags, 'haproxy::skip: true'])

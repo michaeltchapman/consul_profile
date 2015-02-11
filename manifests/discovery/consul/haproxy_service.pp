@@ -11,7 +11,7 @@ define consul_profile::discovery::consul::haproxy_service (
     $ds = 'default::'
   }
 
-  consul_kv { "hiera/haproxy::${ds}${name}::config_hash":
+  consul_kv { "hiera/haproxy::${ds}${name}::${hostname}::config_hash":
     value => $config_jsonstring
   }
 }

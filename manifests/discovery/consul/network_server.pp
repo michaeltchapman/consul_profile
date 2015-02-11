@@ -6,6 +6,9 @@ class consul_profile::discovery::consul::network_server (
   consul::service { 'neutron-server':
     port    => 9696,
     require => Service['neutron-server'],
-    tags    => $::consul_profile::discovery::consul::params::openstack_api_tags
+  }
+
+  consul_profile::discovery::consul::haproxy_service { 'neutron-server':
+    config_hash => $::consul_profile::discovery::consul::params::openstack_api_haproxy_config
   }
 }
