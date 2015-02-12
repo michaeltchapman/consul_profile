@@ -5,26 +5,25 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
 ) {
   $config = $service_hash[$title]
 
-  # Skip is a tag so we have to parse it out. Other config should be in the config hash
-  $_skip = grep($service_hash[$title]['tags'], 'haproxy::skip:' )
-  $__skip = unique(split(delete(join($_skip, '%%%'), 'haproxy::skip:'), '%%%'))
-  if count($__skip) > 0 {
-    $skip = $__skip[0]
-  } else {
+  # haproxy::listen can be used to create a listen stanza with no members.
+  # though I can't think of a use for that right now.
+  if 'haproxy::listen' in $service_hash[$title]['tags'] or 'haproxy::balancemember' in $service_hash[$title]['tags'] {
     $skip = false
-  }
-
-  $nodes =  keys(delete($service_hash[$title], 'tags'))
-  $json_config_hash = hiera("haproxy::${datacenter}::${title}::${nodes[0]}::config_hash", false)
-  if $json_config_hash {
-    $config_hash = parsejson($json_config_hash)
   } else {
-    notice("Unable to locate config hash for haproxy service ${title}")
+    $skip = true
   }
 
-  notice($config_hash)
+  if !$skip {
+    $json_config_hash = hiera("haproxy::${datacenter}::${title}::config_hash", false)
+    if $json_config_hash {
+      $config_hash = parsejson($json_config_hash)
+    } else {
+      warning("Unable to locate config hash for haproxy service ${title} at haproxy::${datacenter}::${title}::config_hash")
+    }
+  }
 
   if !$skip and $config_hash {
+    $nodes = keys(delete($service_hash[$title], 'tags'))
 
     if 'listen' in keys($config_hash) {
       $listen_options = $config_hash['listen']
@@ -71,14 +70,6 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
       $external_address = $bind_address_hash['external']['address']
     }
 
-    notice("Service: $title, Nodes: ${nodes}")
-    notice("Service: $title, Frontend Options: ${listen_options}")
-    notice("Service: $title, Mode: ${mode}")
-    notice("Service: $title, Port(s): ${port}")
-    notice("Service: $title, Bind External: ${bind_external}")
-    notice("Service: $title, Bind Internal: ${bind_internal}")
-    notice("Service: $title, Bind Interface(s): ${bind_interfaces}")
-
     if $internal_address and $external_address {
       $bind = { "${internal_address}:${port}" => $bind_internal,
                 "${external_address}:${port}" => $bind_external }
@@ -91,11 +82,6 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
       $bind = false
     }
 
-    notice("Service: $title, Bind hash: ${bind}")
-
-    # new bind format for listen type zzzzzzzzz
-    #$bind = { '10.0.0.1:80' => ['ssl', 'crt', '/path/to/my/crt.pem'] }
-
     if $bind {
       ::haproxy::listen { $title:
         mode             => $mode,
@@ -105,6 +91,7 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
         ipaddress        => false,
       }
 
+      # TODO: This needs more smarts
       $firewall_title = delete($title, '-')
       ::profile::firewall::rule { "200 ${firewall_title} tcp ${port}":
         port => $port
@@ -117,12 +104,11 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
         handler => 'ts puppet apply /etc/puppet/manifests/site.pp',
       }
 
-      # TODO: watch the k/v store
-      #::consul::watch { "haproxy_kv_${title}":
-      #  type    => 'service',
-      #  service => $title,
-      #  handler => 'puppet apply /etc/puppet/manifests/site.pp',
-      #}
+      # Register this service as being balanced
+      consul::service { $title:
+        tags    => ['haproxy::balanced'],
+        require => Service['haproxy']
+      }
 
       $titles = prefix($nodes, $title)
       consul_profile::highavailability::loadbalancing::haproxy::balancermember { $titles:

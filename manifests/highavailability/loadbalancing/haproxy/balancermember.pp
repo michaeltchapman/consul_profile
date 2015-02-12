@@ -5,8 +5,6 @@ define consul_profile::highavailability::loadbalancing::haproxy::balancermember 
 ) {
 
   $nn = delete($title, $service)
-  notice($nn)
-  notice("haproxy::${datacenter}::${service}::${nn}::config_hash")
   $json_config_hash = hiera("haproxy::${datacenter}::${service}::${nn}::config_hash", false)
   if $json_config_hash {
     $config_hash = parsejson($json_config_hash)
@@ -17,23 +15,33 @@ define consul_profile::highavailability::loadbalancing::haproxy::balancermember 
     }
   } else {
     $options = []
-   }
+  }
 
-  notice($config_hash)
+  # this is also checked in 'listen', but we might have nodes exporting this service
+  # that should not be added as balancermembers
+  if 'haproxy::balancemember' in $service_hash[$service][$nn]['ServiceTags'] {
+    $balancemember = true
+  } else {
+    $balancemember = false
+  }
 
-  $address   = $service_hash[$service][$nn]['Address']
+  if $balancemember {
+    $address   = $service_hash[$service][$nn]['Address']
+    $node  = $service_hash[$service][$nn]['Node']
+    $port      = $service_hash[$service][$nn]['ServicePort']
 
-  $node  = $service_hash[$service][$nn]['Node']
+    ::haproxy::balancermember { "${service}${node}":
+      listening_service => $service,
+      ports             => $port,
+      ipaddresses       => $address,
+      server_names      => $node,
+      options           => $options,
+    }
 
-  $port      = $service_hash[$service][$nn]['ServicePort']
-
-  notice("balancermember for service $service on node $node at $address on port $port with tags $options")
-
-  ::haproxy::balancermember { "${service}${node}":
-    listening_service => $service,
-    ports             => $port,
-    ipaddresses       => $address,
-    server_names      => $node,
-    options           => $options,
+    ::consul::watch { "haproxy_kv_${title}":
+      type    => 'key',
+      key     => "hiera/haproxy::${datacenter}::${service}::${nn}::config_hash",
+      handler => 'ts puppet apply /etc/puppet/manifests/site.pp',
+    }
   }
 }

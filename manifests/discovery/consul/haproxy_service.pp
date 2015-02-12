@@ -1,17 +1,18 @@
 #
 define consul_profile::discovery::consul::haproxy_service (
   $config_hash,
-  $datacenter = undef,
+  $datacenter = 'default',
 ) {
   $config_jsonstring = inline_template("<%- require 'json' -%><%= JSON.pretty_generate(Hash[@config_hash.sort]) %>")
 
-  if $datacenter {
-    $ds = "${datacenter}::"
-  } else {
-    $ds = 'default::'
+  # Node (balancemember) config
+  consul_kv { "hiera/haproxy::${datacenter}::${name}::${hostname}::config_hash":
+    value => $config_jsonstring
   }
 
-  consul_kv { "hiera/haproxy::${ds}${name}::${hostname}::config_hash":
+  # Service (listen) config - required since some service exporters will not be balancemembers,
+  # so we need a consistent location to look for listen config.
+  consul_kv { "hiera/haproxy::${datacenter}::${name}::config_hash":
     value => $config_jsonstring
   }
 }
