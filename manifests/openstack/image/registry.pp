@@ -5,7 +5,7 @@ class consul_profile::openstack::image::registry (
     includes => ['::profile::openstack::image::registry', '::consul_profile::discovery::consul::image_registry'],
   }
 
-  if ! hiera('mysql_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__mysql__Address', false) {
     runtime_fail { 'glanceregmysqldep':
       fail    => true,
       message => "glanceregmysqldep: requires mysql_Address",
@@ -16,7 +16,7 @@ class consul_profile::openstack::image::registry (
     }
   }
 
-  if ! hiera('keystone_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__keystone__Address', false) {
     runtime_fail { 'glanceregkeystonedep':
       fail    => true,
       message => "glanceregmysqldep: requires keystone_Address",

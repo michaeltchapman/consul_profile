@@ -28,6 +28,11 @@ class consul_profile::highavailability::loadbalancing::haproxy (
       require => Service['haproxy']
     }
 
+    consul::watch { 'haproxy_services_watch':
+      type    => 'services',
+      handler => 'ts puppet apply /etc/puppet/manifests/site.pp'
+    }
+
   } else {
     runtime_fail { 'haproxyservicesdep':
       fail    => true,

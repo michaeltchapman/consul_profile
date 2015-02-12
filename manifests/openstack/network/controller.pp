@@ -1,21 +1,21 @@
 class consul_profile::openstack::network::controller {
   include ::consul_profile::openstack::network
 
-  if ! hiera('mysql_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__mysql__Address', false) {
     runtime_fail { 'neutronserverdbdep':
       fail    => true,
       message => "neutron-server requires mysql_Address",
     }
   } else {
 
-    if ! hiera('keystone_Address', false) {
+    if ! hiera('service_hash__haproxy::balanced__keystone__Address', false) {
       runtime_fail { 'neutronserverkeystonedep':
         fail    => true,
         message => "neutron-server requires keystone_Address",
       }
     } else {
 
-      if ! hiera('nova-api_Address', false) {
+      if ! hiera('service_hash__haproxy::balanced__nova-api__Address', false) {
         runtime_fail { 'neutronservernovaapidep':
           fail    => true,
           message => "neutron-server requires nova-api_Address",

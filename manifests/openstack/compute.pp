@@ -1,9 +1,9 @@
 class consul_profile::openstack::compute {
 
-  if ! hiera('mysql_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__mysql_Address', false) {
     runtime_fail { 'novadbdep':
       fail    => true,
-      message => "novadbdep: requires mysql_Address",
+      message => "novadbdep: requires haproxy balanced mysql_Address",
     }
   } else {
     Consul_profile::Discovery::Consul::Multidep<| title == 'novamultidep' |> {
@@ -11,7 +11,7 @@ class consul_profile::openstack::compute {
     }
   }
 
-  if ! hiera('glance-api_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__glance-api__Address', false) {
     runtime_fail { 'novaglancedep':
       fail    => true,
       message => "novaglancedep: requires glance-api_Address",
@@ -36,13 +36,13 @@ class consul_profile::openstack::compute {
 
   # nova::network::neutron has to be separate because of
   # data dep cycle between nova-api and neutron-server
-  if ! hiera('keystone_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__keystone__Address', false) {
     runtime_fail { 'novakeystonedep':
       fail    => true,
       message => "novakeystonedep: requires keystone_Address",
     }
   } else {
-    if ! hiera('neutron-server_Address', false) {
+    if ! hiera('service_hash__haproxy::balanced__neutron-server__Address', false) {
       runtime_fail { 'novaneutronserverdep':
         fail    => true,
         message => "novaneutronserverdep: requires neutron-server_Address",
@@ -58,5 +58,4 @@ class consul_profile::openstack::compute {
     deps     => ['novarabbitmqdep','novaglancedep','novadbdep'],
     includes => ['::nova']
   }
-
 }

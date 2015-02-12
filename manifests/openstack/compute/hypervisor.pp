@@ -8,13 +8,13 @@ class consul_profile::openstack::compute::hypervisor (
     includes +> ['::nova::compute', '::nova::compute::spice', "::nova::compute::${hypervisor_type}"]
   }
 
-  if ! hiera('keystone_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__keystone__Address', false) {
     runtime_fail { 'novacomputekeystonedep':
       fail    => true,
       message => "Nova compute requires keystone_Address",
     }
   } else {
-    if ! hiera('neutron-server_Address', false) {
+    if ! hiera('service_hash__haproxy::balanced__neutron-server__Address', false) {
       runtime_fail { 'novacomputekeystonedep':
         fail    => true,
         message => "Nova compute requires neutron-server_Address",

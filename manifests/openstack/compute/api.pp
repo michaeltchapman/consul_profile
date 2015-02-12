@@ -1,7 +1,7 @@
 class consul_profile::openstack::compute::api {
   include ::consul_profile::openstack::compute
 
-  if ! hiera('keystone_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__keystone_Address', false) {
     runtime_fail { 'novaapikeystonedep':
       fail    => true,
       message => "Nova api requires keystone_Address",

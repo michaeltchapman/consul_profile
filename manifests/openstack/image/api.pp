@@ -1,7 +1,7 @@
 class consul_profile::openstack::image::api(
 ) {
 
-  if ! hiera('mysql_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__mysql__Address', false) {
     runtime_fail { 'glanceapimysqldep':
       fail    => true,
       message => "Glance api requires mysql_Address",
@@ -12,7 +12,7 @@ class consul_profile::openstack::image::api(
     }
   }
 
-  if ! hiera('keystone_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__keystone__Address', false) {
     runtime_fail { 'glanceapikeystonedep':
       fail    => true,
       message => "Glance api requires keystone_Address",
@@ -23,7 +23,7 @@ class consul_profile::openstack::image::api(
     }
   }
 
-  if ! hiera('glance-registry_Address', false) {
+  if ! hiera('service_hash__haproxy::balanced__glance-registry__Address', false) {
     runtime_fail { 'glanceapiregistrydep':
       fail    => true,
       message => "Glance api requires glance-registry_Address",

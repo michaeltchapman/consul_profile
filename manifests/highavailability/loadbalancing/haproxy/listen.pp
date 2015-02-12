@@ -107,6 +107,7 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
       # Register this service as being balanced
       consul::service { $title:
         tags    => ['haproxy::balanced'],
+        port    => $port,
         require => Service['haproxy']
       }
 
