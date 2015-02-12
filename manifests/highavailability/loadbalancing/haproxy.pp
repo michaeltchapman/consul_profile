@@ -13,7 +13,6 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
     include ::haproxy
 
-    notice($service_hash)
     $services = keys($service_hash)
 
     consul_profile::highavailability::loadbalancing::haproxy::listen { $services:
