@@ -4,9 +4,11 @@ class consul_profile::discovery::consul::network_server (
   include consul_profile::discovery::consul::params
 
   consul::service { 'neutron-server':
-    port    => 9696,
-    require => Service['neutron-server'],
-    tags    => ['haproxy::balancemember']
+    port         => 9696,
+    require      => Service['neutron-server'],
+    tags         => ['haproxy::balancemember'],
+    check_script => 'systemctl status neutron-server && netstat -tunpl | grep 9696',
+    check_interval => '5s'
   }
 
   consul_profile::discovery::consul::haproxy_service { 'neutron-server':
