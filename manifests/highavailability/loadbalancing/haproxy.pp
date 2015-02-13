@@ -1,7 +1,8 @@
 class consul_profile::highavailability::loadbalancing::haproxy (
   $service_hash = undef,
   $bind_address_hash = {},
-  $ts_ensure = 'installed'
+  $ts_ensure = 'installed',
+  $consul_ui = true
 ) {
 
   # This is used for consul watches
@@ -31,6 +32,25 @@ class consul_profile::highavailability::loadbalancing::haproxy (
     consul::watch { 'haproxy_services_watch':
       type    => 'services',
       handler => 'ts puppet apply /etc/puppet/manifests/site.pp'
+    }
+
+    if $consul_ui {
+      # this needs to be special cased
+      ::haproxy::listen { 'consul-ui':
+        bind      => { "${bind_address_hash['internal']['address']}:8500" => []},
+        mode      => 'http',
+        options   => { 'balance' => 'roundrobin',
+                       'option'  => ['forwardfor',
+                                     'httplog']},
+      }
+
+      ::haproxy::balancermember { 'consul-ui':
+        listening_service => 'consul-ui',
+        ipaddresses       => ['127.0.0.1'],
+        server_names      => 'localhost',
+        ports             => '8500',
+        options           => 'check',
+      }
     }
 
   } else {
