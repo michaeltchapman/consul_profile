@@ -8,7 +8,7 @@ class consul_profile::openstack::compute::api {
     }
   } else {
     Consul_profile::Discovery::Consul::Multidep <| title == 'novamultidep' |> {
-      includes +> ['::nova::api', '::consul_profile::discovery::consul::compute_api']
+      includes +> ['::profile::openstack::compute::api', '::consul_profile::discovery::consul::compute_api']
     }
   }
 }
