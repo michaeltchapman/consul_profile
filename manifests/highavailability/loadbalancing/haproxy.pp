@@ -2,7 +2,8 @@ class consul_profile::highavailability::loadbalancing::haproxy (
   $service_hash = undef,
   $bind_address_hash = {},
   $ts_ensure = 'installed',
-  $consul_ui = true
+  $consul_ui = true,
+  $apply_wrapper = '/vagrant/provision/tspuppet.sh'
 ) {
 
   # This is used for consul watches
@@ -31,7 +32,7 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
     consul::watch { 'haproxy_services_watch':
       type    => 'services',
-      handler => 'ts puppet apply /etc/puppet/manifests/site.pp'
+      handler => "ts ${apply_wrapper}"
     }
 
     if $consul_ui {
