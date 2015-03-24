@@ -14,15 +14,14 @@ class consul_profile::base::common(
     target => '/etc/ssh/ssh_host_rsa_key'
   }
 
-  # if the auth key hasn't been set, this is probably our first rodeo,
-  # so regenerate our host key for great security.
-  if !$auth_key_value {
-    exec { 'Regenerate RSA host keys':
-      command => "echo -e 'y\\n' | ssh-keygen -t rsa -N '' -f /etc/ssh/ssh_host_rsa_key",
-      path    => '/usr/bin:/bin:/usr/sbin:/sbin',
-      before  => Consul_kv["hiera/ssh::${datacenter}::${hostname}"]
-    }
-  }
+  # This will trigger too often
+  #if $auth_key_value == 'regenerate' {
+  #  exec { 'Regenerate RSA host keys':
+  #    command => "echo -e 'y\\n' | ssh-keygen -t rsa -N '' -f /etc/ssh/ssh_host_rsa_key",
+  #    path    => '/usr/bin:/bin:/usr/sbin:/sbin',
+  #    before  => Consul_kv["hiera/ssh::${datacenter}::${hostname}"]
+  #  }
+  #}
 
   consul_kv { "hiera/ssh::${datacenter}::${hostname}":
     value => $::sshrsakey
