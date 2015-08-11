@@ -7,8 +7,8 @@ class consul_profile::discovery::consul::image_api (
     port         => 9292,
     require      => Service['glance-api'],
     tags         => ['haproxy::balancemember'],
-    check_script => 'systemctl status openstack-glance-api && netstat -tunpl | grep 9292',
-    check_interval => '5s'
+    checks  => [{ 'script' => 'systemctl status openstack-glance-api && netstat -tunpl | grep 9292',
+                  'interval' => '5s' }]
   }
 
   consul_profile::discovery::consul::haproxy_service { 'glance-api':

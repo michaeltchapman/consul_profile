@@ -5,8 +5,8 @@ class consul_profile::discovery::consul::mariadb (
     port    => 3306,
     require => Service['mysqld'],
     tags    => ['haproxy::balancemember'],
-    check_script => 'systemctl status mariadb && netstat -tunpl | grep 3306',
-    check_interval => '5s'
+    checks  => [{ 'script' => 'systemctl status mariadb && netstat -tunpl | grep 3306',
+                  'interval' => '5s' }]
   }
 
   $haproxy_data = {

@@ -7,8 +7,8 @@ class consul_profile::discovery::consul::network_server (
     port         => 9696,
     require      => Service['neutron-server'],
     tags         => ['haproxy::balancemember'],
-    check_script => 'systemctl status neutron-server && netstat -tunpl | grep 9696',
-    check_interval => '5s'
+    checks  => [{ 'script' => 'systemctl status neutron-server && netstat -tunpl | grep 9696',
+                  'interval' => '5s' }]
   }
 
   consul_profile::discovery::consul::haproxy_service { 'neutron-server':

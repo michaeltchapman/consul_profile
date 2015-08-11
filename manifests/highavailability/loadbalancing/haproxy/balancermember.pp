@@ -48,7 +48,7 @@ define consul_profile::highavailability::loadbalancing::haproxy::balancermember 
     ::consul::watch { "haproxy_kv_${title}":
       type    => 'key',
       key     => "hiera/haproxy::${datacenter}::${service}::${nn}::config_hash",
-      handler => 'ts puppet apply /etc/puppet/manifests/site.pp',
+      handler => "${::consul_profile::highavailability::loadbalancing::haproxy::apply_wrapper}"
     }
   }
 }

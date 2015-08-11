@@ -3,7 +3,7 @@ class consul_profile::highavailability::loadbalancing::haproxy (
   $bind_address_hash = {},
   $ts_ensure = 'installed',
   $consul_ui = true,
-  $apply_wrapper = '/vagrant/provision/tspuppet.sh',
+  $apply_wrapper = 'sudo /vagrant/provision/watchwrapper.sh',
   $enable_cron = true,
   $cron_minutes = 2
 ) {
@@ -44,7 +44,7 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
     consul::watch { 'haproxy_services_watch':
       type    => 'services',
-      handler => "ts ${apply_wrapper}"
+      handler => "${apply_wrapper}"
     }
 
     if $consul_ui {

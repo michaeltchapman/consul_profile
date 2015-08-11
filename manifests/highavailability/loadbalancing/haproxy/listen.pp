@@ -101,7 +101,7 @@ define consul_profile::highavailability::loadbalancing::haproxy::listen (
       ::consul::watch { "haproxy_service_${title}":
         type    => 'service',
         service => $title,
-        handler => "ts ${::consul_profile::highavailability::loadbalancing::haproxy::apply_wrapper}"
+        handler => "${::consul_profile::highavailability::loadbalancing::haproxy::apply_wrapper}"
       }
 
       # Register this service as being balanced
