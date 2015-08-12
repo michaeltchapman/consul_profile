@@ -4,8 +4,9 @@ class consul_profile::highavailability::loadbalancing::haproxy (
   $ts_ensure = 'installed',
   $consul_ui = true,
   $apply_wrapper = 'sudo /vagrant/provision/watchwrapper.sh',
+  $cron_command = '/bin/ts /vagrant/provision/tspuppet.sh',
   $enable_cron = true,
-  $cron_minutes = 2
+  $cron_minutes = '*/3'
 ) {
 
   # This is used for consul watches
@@ -15,7 +16,7 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
   if $enable_cron {
     cron { 'tspuppet':
-      command     => "ts ${apply_wrapper}",
+      command     => "${apply_wrapper}",
       environment => 'PATH=/bin:/usr/bin:/usr/sbin',
       user        => 'root',
       minute      => $cron_minutes,
