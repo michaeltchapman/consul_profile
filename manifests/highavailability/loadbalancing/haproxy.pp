@@ -16,7 +16,7 @@ class consul_profile::highavailability::loadbalancing::haproxy (
 
   if $enable_cron {
     cron { 'tspuppet':
-      command     => "${apply_wrapper}",
+      command     => "${cron_command}",
       environment => 'PATH=/bin:/usr/bin:/usr/sbin',
       user        => 'root',
       minute      => $cron_minutes,
